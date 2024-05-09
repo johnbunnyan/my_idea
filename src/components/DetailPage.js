@@ -8,7 +8,7 @@ function DetailPage() {
   const { state } = location; 
   const index = state.index; 
   const [circle, setCircle] = useState(null);
-  const [clicks, setClicks] = useState(0); // 클릭 횟수 상태 추가
+  // const [clicks, setClicks] = useState(0); // 클릭 횟수 상태 추가
 
   useEffect(() => {
     clicks = 0;
@@ -16,7 +16,7 @@ function DetailPage() {
     const savedCircles = JSON.parse(localStorage.getItem('circles'));
     const savedClicks = JSON.parse(localStorage.getItem(`circle_${index}_clicks`)); // 클릭 횟수 가져오기
     setCircle(savedCircles[index]);
-    setClicks(savedClicks || 0); // 클릭 횟수 설정
+    // setClicks(savedClicks || 0); // 클릭 횟수 설정
   }, [index]);
 
   // 뒤로가기 함수
