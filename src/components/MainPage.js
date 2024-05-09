@@ -7,7 +7,7 @@ function MainPage() {
   const [isTyping, setIsTyping] = useState(false); // 텍스트 입력 중인지 여부를 관리
   const [circles, setCircles] = useState([]); // 원 정보를 저장할 JSON 배열
   // const [clickCounts, setClickCounts] = useState({}); // 클릭 횟수를 상태로 관리
-  const [backgroundImage, setBackgroundImage] = useState('');
+  // const [backgroundImage, setBackgroundImage] = useState('');
 
   
   const navigate = useNavigate();
@@ -134,14 +134,14 @@ function MainPage() {
     return `#${hash}`;
   };
 
-  const adjustColorBrightness = (color, amount) => {
-    // 색상의 밝기를 조절하여 반환
-    return '#' + color.match(/[0-9a-f]{2}/g).map(channel => {
-      const value = parseInt(channel, 16);
-      const adjustedValue = Math.min(255, value + amount);
-      return adjustedValue.toString(16).padStart(2, '0');
-    }).join('');
-  };
+  // const adjustColorBrightness = (color, amount) => {
+  //   // 색상의 밝기를 조절하여 반환
+  //   return '#' + color.match(/[0-9a-f]{2}/g).map(channel => {
+  //     const value = parseInt(channel, 16);
+  //     const adjustedValue = Math.min(255, value + amount);
+  //     return adjustedValue.toString(16).padStart(2, '0');
+  //   }).join('');
+  // };
   return (
     <div className="main-container">
       <div className="input-container">
