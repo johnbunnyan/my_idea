@@ -8,7 +8,7 @@ function DetailPage() {
   const { state } = location; 
   const index = state.index; 
   const [circle, setCircle] = useState(null);
-  const [clicks, setClicks] = useState(0); // 클릭 횟수 상태 추가
+  // const [clicks, setClicks] = useState(0); // 클릭 횟수 상태 추가
 
   useEffect(() => {
     // 해당 인덱스에 해당하는 원의 정보를 가져옴
