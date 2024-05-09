@@ -13,7 +13,7 @@ function DetailPage() {
   useEffect(() => {
     // 해당 인덱스에 해당하는 원의 정보를 가져옴
     const savedCircles = JSON.parse(localStorage.getItem('circles'));
-    const savedClicks = JSON.parse(localStorage.getItem(`circle_${index}_clicks`)); // 클릭 횟수 가져오기
+    // const savedClicks = JSON.parse(localStorage.getItem(`circle_${index}_clicks`)); // 클릭 횟수 가져오기
     setCircle(savedCircles[index]);
     // setClicks(savedClicks || 0); // 클릭 횟수 설정
   }, [index]);
