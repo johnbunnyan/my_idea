@@ -1,0 +1,88 @@
+/* MainPage.css */
+
+/* 전체 페이지 컨테이너 스타일 */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-size: cover;
+  }
+  
+  /* 입력창과 버튼을 담는 컨테이너 스타일 */
+  .input-container {
+    margin-top: auto; /* 화면 하단으로 이동 */
+    margin-bottom: 20px;
+  }
+  
+  /* 텍스트 입력창 스타일 */
+  .text-input {
+    width: 300px;
+    padding: 10px;
+    margin-right: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  /* 버튼 스타일 */
+  .main-button {
+    padding: 8px 16px; /* 버튼 크기 조정 */
+    margin-right: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px; /* 버튼 텍스트 크기 조정 */
+    transition: background-color 0.3s ease;
+  }
+  
+  .main-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* 원 스타일 */
+  .circle {
+    position: absolute;
+    width: 100px; /* 원 크기 키우기 */
+    height: 100px; /* 원 크기 키우기 */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* 요소들을 세로로 정렬 */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .circle:hover {
+    transform: scale(1.1);
+  }
+  
+  /* 원 안의 텍스트 스타일 */
+  .circle-text {
+    color: white;
+    font-size: 12px; /* 텍스트 크기 작게 */
+  }
+  
+  /* 상세페이지 이동 버튼 스타일 */
+  .detail-button {
+    position: absolute;
+    top: 10px; /* 위쪽 여백 조정 */
+    right: 10px; /* 오른쪽 여백 조정 */
+    padding: 5px 8px; /* 버튼 크기 조정 */
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .detail-button:hover {
+    background-color: #138496;
+  }
+  
