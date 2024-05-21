@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -8,11 +8,11 @@ function MainPage() {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false); // 텍스트 입력 중인지 여부를 관리
   const [circles, setCircles] = useState([]); // 원 정보를 저장할 JSON 배열
-  // const [clickCounts, setClickCounts] = useState({}); // 클릭 횟수를 상태로 관리
-  // const [backgroundImage, setBackgroundImage] = useState('');
+  const [pageHeight, setPageHeight] = useState(window.innerHeight); // 페이지 높이 상태 추가
 
   
   const navigate = useNavigate();
+  const containerRef = useRef(null); // 스크롤 조정을 위해 ref 추가
 
   useEffect(() => {
     const savedCircles = JSON.parse(localStorage.getItem('circles'));
@@ -145,13 +145,13 @@ function MainPage() {
       id: `circle-${Date.now()}`, // 고유한 ID 생성
       text: inputText,
       color: randomColor(),
-      position: randomPosition(),
+      position:randomNonOverlappingPosition(circles),
       clicks: 0, // 클릭 횟수 초기화
       createdAt: Date.now(),
       remainingTime: 100 // 처음에는 100%로 시작
     };
 
-    newCircle.position = randomNonOverlappingPosition(newCircle, circles);
+  
 
     const newCircles = [...circles, newCircle];
     setCircles(newCircles);
@@ -181,13 +181,13 @@ function MainPage() {
 
 
 
-  const randomPosition = () => {
-    // 랜덤한 위치 생성
-    return {
-      left: `${Math.random() * 70 + 15}%`,
-      top: `${Math.random() * 60 + 5}%` // 더 멀리 떨어뜨리기 위해 범위 수정
-    };
-  };
+  // const randomPosition = () => {
+  //   // 랜덤한 위치 생성
+  //   return {
+  //     left: `${Math.random() * 70 + 15}%`,
+  //     top: `${Math.random() * 60 + 5}%` // 더 멀리 떨어뜨리기 위해 범위 수정
+  //   };
+  // };
 
   const randomColor = () => {
     // 랜덤한 색상 생성
@@ -206,55 +206,76 @@ function MainPage() {
 
 
 
-  const randomNonOverlappingPosition = (newCircle, existingCircles) => {
-    const maxAttempts = 100; // 무한 루프 방지를 위한 최대 시도 횟수
-    let position, overlaps;
-    let attempts = 0;
-    
-    position = {
+ // 겹치지 않는 위치를 찾기 위한 함수
+const randomNonOverlappingPosition = (existingCircles) => {
+  const newPosition = () => {
+    return {
       left: `${Math.random() * 70 + 15}%`,
-      top: `${Math.random() * 60 + 5}%`
+      top: `${Math.random() * pageHeight}px`
     };
-
-    do {
-     
-      overlaps = existingCircles.some(circle => {
-        const distance = calculateDistance(
-          parseFloat(position.left),
-          parseFloat(position.top),
-          parseFloat(circle.position.left),
-          parseFloat(circle.position.top)
-        );
-        return distance < 10; // 원의 반지름 5%를 기준으로 겹침 여부 판단
-      });
-      attempts++;
-    } while (overlaps && attempts < maxAttempts);
-    
-    return position;
   };
+
+  let position;
+  let attempts = 0;
+
+  do {
+    position = newPosition();
+    attempts++;
+  } while (isOverlapping(position, existingCircles) && attempts < 100);
+
+  if (attempts === 100) {
+    // 겹치지 않는 위치를 찾을 수 없으면 페이지 높이 증가
+    setPageHeight(prevHeight => prevHeight + 200);
+    position = newPosition();
+  }
+
+  return position;
+};
+
+// 위치가 겹치는지 확인하는 함수
+const isOverlapping = (position, existingCircles) => {
+  const radius = 25; // 원의 반지름 25px
+  const padding = 10; // 추가 패딩
+
+  return existingCircles.some(circle => {
+    const distance = calculateDistance(
+      parseFloat(position.left),
+      parseFloat(position.top),
+      parseFloat(circle.position.left),
+      parseFloat(circle.position.top)
+    );
+    return distance < (2 * radius + padding); // 원의 두 배 반지름 + 패딩을 기준으로 겹침 여부 판단
+  });
+};
+
+// 페이지 높이가 변할 때 컨테이너의 높이를 조정하는 효과 추가
+useEffect(() => {
+  if (containerRef.current) {
+    containerRef.current.style.height = `${pageHeight}px`;
+  }
+}, [pageHeight]); 
 
   const calculateDistance = (x1, y1, x2, y2) => {
     return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+  };
+
+  const getClickMessage = (clicks) => {
+    if (clicks < 15) {
+      return '아이디어🌱';
+    } else if (clicks >= 15 && clicks < 50) {
+      return '성취🔥';
+    } else if (clicks >= 50 && clicks < 100) {
+      return '산독기😈';
+    } else {
+      return '확정된 미래⭐️';
+    }
   };
 
 
   
   return (
     <div className="main-container">
-      <div className="input-container">
-        <input
-          type="text"
-          value={inputText}
-          onChange={handleInputChange}
-          onKeyDown={handleInputKeyDown}
-          onKeyUp={() => setIsTyping(false)}
-          className="text-input"
-        />
-        <button onClick={handleButtonClick} className="main-button">입력</button>
-        <button onClick={handleResetButtonClick} className="main-button">초기화</button>
-      </div>
-
-      <div className='circles'>
+    <div className="circles-container" ref={containerRef}>
         {circles.map((circle, index) => (
           <div
             key={`test-${circle.id}`}
@@ -268,7 +289,7 @@ function MainPage() {
             onClick={() => handleComponentClick(index)}
           >
             <span className="circle-text">{circle.text}</span>
-            <span className="circle-text">성취율🔥: {circle.clicks || 0}</span>
+            <span className="circle-text">{getClickMessage(circle.clicks)}: {circle.clicks || 0}</span>
            
             <div className="time-bar-container">
               <div
@@ -278,6 +299,19 @@ function MainPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="input-container" style={{ position: 'fixed', bottom: 0 }}>
+        <input
+          type="text"
+          value={inputText}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          onKeyUp={() => setIsTyping(false)}
+          className="text-input"
+        />
+        <button onClick={handleButtonClick} className="main-button">입력</button>
+        <button onClick={handleResetButtonClick} className="main-button">초기화</button>
       </div>
     </div>
   );
