@@ -150,14 +150,8 @@ function MainPage() {
   };
 
   const handleComponentClick = (index) => {
-    handleCircleClick(index);
-    // 클릭한 원의 클릭 횟수 증가
-    const updatedCircles = [...circles];
-    updatedCircles[index].clicks += 1;
-    setCircles(updatedCircles);
 
-    // 로컬 스토리지에 업데이트된 원 정보 저장
-    saveCirclesToLocalStorage(updatedCircles);
+    handleMoveToDetail(index);
   };
 
   // 상세페이지로 이동하는 함수
@@ -171,26 +165,6 @@ function MainPage() {
   };
 
 
-  const handleCircleClick = (id) => {
-    const updatedCircles = circles.map((circle) => {
-      if (circle.id === id) {
-        return {
-          ...circle,
-          isBouncing: true,
-        };
-      }
-      return circle;
-    });
-    setCircles(updatedCircles);
-
-    setTimeout(() => {
-      const resetCircles = circles.map((circle) => ({
-        ...circle,
-        isBouncing: false,
-      }));
-      setCircles(resetCircles);
-    }, 1000);
-  };
 
   const randomPosition = () => {
     // 랜덤한 위치 생성
@@ -280,13 +254,7 @@ function MainPage() {
           >
             <span className="circle-text">{circle.text}</span>
             <span className="circle-text">클릭 횟수: {circle.clicks || 0}</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMoveToDetail(index);
-              }}
-              className="detail-button"
-            >→</button>
+           
             <div className="time-bar-container">
               <div
                 className="time-bar"
