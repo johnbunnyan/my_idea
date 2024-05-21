@@ -101,3 +101,18 @@
       transform: translateY(0);
     }
   }
+
+
+.time-bar-container {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: rgba(239, 8, 8, 0.5);
+}
+
+.time-bar {
+  height: 100%;
+  background-color: black;
+}

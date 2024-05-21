@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; // react-beautiful-dnd 라이브러리 import
+
 
 import './MainPage.css'; // CSS 파일 import
 
@@ -15,21 +15,53 @@ function MainPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 페이지가 로드될 때 저장된 원 정보 가져오기
     const savedCircles = JSON.parse(localStorage.getItem('circles'));
     if (savedCircles) {
-      // 24시간 이상 지난 원 삭제
-      const filteredCircles = savedCircles.filter(circle => {
-        const currentTime = Date.now();
-        const circleTime = new Date(circle.timestamp).getTime();
-       //  24 * 60 * 60 * 1000 - 하루
-       //               1분
-        return currentTime - circleTime <= 60 * 60 * 1000; // 24시간(밀리초) 비교
-      });
-      setCircles(filteredCircles);
-      saveCirclesToLocalStorage(filteredCircles);
+      setCircles(savedCircles);
     }
   }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const now = Date.now();
+      const updatedCircles = circles.map(circle => {
+        const age = now - circle.createdAt;
+    const minutes = age / (1000 * 60);
+    const hours = age / (1000 * 60 * 60);
+
+    if (hours >= 1) {
+      return null; // 원을 삭제
+    }
+
+    // if (minutes >= 1) {
+    //   return null; // 원을 삭제
+    // }
+
+       // const opacity = Math.max(0, 1 - (hours / 12));
+        //const newColor = hexToRgb(circle.color, opacity);
+
+        return {
+          ...circle,
+          //color: newColor,
+          remainingTime: (1 - minutes) * 100 // 1분 기준으로 남은 시간을 퍼센트로 계산
+        };
+      }).filter(Boolean);
+
+      setCircles(updatedCircles);
+      localStorage.setItem('circles', JSON.stringify(updatedCircles));
+    }, 10000); // 1분마다 업데이트
+
+    
+    return () => clearInterval(intervalId);
+  }, [circles]);
+
+  // const hexToRgb = (hex, opacity) => {
+  //   const bigint = parseInt(hex.slice(1), 16);
+  //   const r = (bigint >> 16) & 255;
+  //   const g = (bigint >> 8) & 255;
+  //   const b = bigint & 255;
+  //   return `rgba(${r},${g},${b},${opacity})`;
+  // };
 
   const saveCirclesToLocalStorage = (circles) => {
     localStorage.setItem('circles', JSON.stringify(circles)); // 원 정보를 로컬 스토리지에 저장
@@ -85,7 +117,7 @@ function MainPage() {
     // 중복된 텍스트일 경우 클릭 횟수 증가
     const updatedCircles = circles.map(circle =>
       circle.text === inputText
-        ? { ...circle, clicks: circle.clicks + 1, timestamp: new Date().toISOString() }
+        ? { ...circle, clicks: circle.clicks + 1, createdAt: Date.now(), remainingTime: 100 }
         : circle
     );
     setCircles(updatedCircles);
@@ -100,7 +132,8 @@ function MainPage() {
       color: randomColor(),
       position: randomPosition(),
       clicks: 0, // 클릭 횟수 초기화
-      timestamp: new Date().toISOString() // 생성된 시간 저장
+      createdAt: Date.now(),
+      remainingTime: 100 // 처음에는 100%로 시작
     };
 
     newCircle.position = randomNonOverlappingPosition(newCircle, circles);
@@ -182,15 +215,7 @@ function MainPage() {
   //   }).join('');
   // };
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return; // 드랍된 위치가 없으면 종료
 
-    const items = Array.from(circles);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setCircles(items);
-  };
 
   const randomNonOverlappingPosition = (newCircle, existingCircles) => {
     const maxAttempts = 100; // 무한 루프 방지를 위한 최대 시도 횟수
@@ -201,7 +226,7 @@ function MainPage() {
       left: `${Math.random() * 70 + 15}%`,
       top: `${Math.random() * 60 + 5}%`
     };
-    
+
     do {
      
       overlaps = existingCircles.some(circle => {
@@ -240,45 +265,37 @@ function MainPage() {
         <button onClick={handleResetButtonClick} className="main-button">초기화</button>
       </div>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="circles">
-          {(provided) => (
-            <div className='circles' {...provided.droppableProps} ref={provided.innerRef}>
-              {circles.map((circle, index) => (
-                <Draggable key={`test-${circle.id}`} draggableId={`test-${circle.id}`} index={index}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`circle ${circle.isBouncing ? 'bounce' : ''}`}
-                      style={{
-                        left: circle.position.left,
-                        top: circle.position.top,
-                        backgroundColor: circle.color,
-                        transform: `scale(${1 + Math.floor(circle.clicks / 20) * 0.1})` // 10번 클릭마다 크기 조정
-                      }}
-                      onClick={() => handleComponentClick(index)}
-                    >
-                      <span className="circle-text">{circle.text}</span>
-                      <span className="circle-text">클릭 횟수: {circle.clicks || 0}</span>
-                      <button
-            onClick={(e) => {
-              e.stopPropagation(); // 버튼 클릭 시 상위 요소로의 이벤트 전파(stopPropagation) 방지
-              // 상세 페이지로 이동하는 로직 추가
-              handleMoveToDetail(index);
+      <div className='circles'>
+        {circles.map((circle, index) => (
+          <div
+            key={`test-${circle.id}`}
+            className={`circle ${circle.isBouncing ? 'bounce' : ''}`}
+            style={{
+              left: circle.position.left,
+              top: circle.position.top,
+              backgroundColor: circle.color,
+              transform: `scale(${1 + Math.floor(circle.clicks / 20) * 0.1})`
             }}
-            className="detail-button"
-          >→</button>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
+            onClick={() => handleComponentClick(index)}
+          >
+            <span className="circle-text">{circle.text}</span>
+            <span className="circle-text">클릭 횟수: {circle.clicks || 0}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleMoveToDetail(index);
+              }}
+              className="detail-button"
+            >→</button>
+            <div className="time-bar-container">
+              <div
+                className="time-bar"
+                style={{ width: `${circle.remainingTime}%` }}
+              ></div>
             </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
