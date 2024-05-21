@@ -26,7 +26,7 @@ function MainPage() {
       const now = Date.now();
       const updatedCircles = circles.map(circle => {
         const age = now - circle.createdAt;
-    const minutes = age / (1000 * 60);
+    //const minutes = age / (1000 * 60);
     const hours = age / (1000 * 60 * 60);
 
     if (hours >= 1) {
@@ -43,7 +43,7 @@ function MainPage() {
         return {
           ...circle,
           //color: newColor,
-          remainingTime: (1 - minutes) * 100 // 1분 기준으로 남은 시간을 퍼센트로 계산
+          remainingTime: (1 - hours) * 100 // 1분 기준으로 남은 시간을 퍼센트로 계산
         };
       }).filter(Boolean);
 
