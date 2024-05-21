@@ -268,7 +268,7 @@ function MainPage() {
             onClick={() => handleComponentClick(index)}
           >
             <span className="circle-text">{circle.text}</span>
-            <span className="circle-text">클릭 횟수: {circle.clicks || 0}</span>
+            <span className="circle-text">성취율🔥: {circle.clicks || 0}</span>
            
             <div className="time-bar-container">
               <div
