@@ -24,12 +24,14 @@ function MainPage() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       const now = Date.now();
+      // NOTE hourCheck();
+
       const updatedCircles = circles.map(circle => {
         const age = now - circle.createdAt;
     //const minutes = age / (1000 * 60);
     const hours = age / (1000 * 60 * 60);
 
-    if (hours >= 1) {
+    if (hours >= 12) {
       return null; // 원을 삭제
     }
 
@@ -39,17 +41,17 @@ function MainPage() {
 
        // const opacity = Math.max(0, 1 - (hours / 12));
         //const newColor = hexToRgb(circle.color, opacity);
-
+        let remainingTime = (1 - hours / 12) * 100;
         return {
           ...circle,
-          //color: newColor,
-          remainingTime: (1 - hours) * 100 // 1분 기준으로 남은 시간을 퍼센트로 계산
+          color: remainingTime <= 3 ? 'red' : circle.color,
+          remainingTime: remainingTime
         };
       }).filter(Boolean);
 
       setCircles(updatedCircles);
       localStorage.setItem('circles', JSON.stringify(updatedCircles));
-    }, 10000); // 1분마다 업데이트
+    }, 1000); // 1분마다 업데이트
 
     
     return () => clearInterval(intervalId);
@@ -62,6 +64,19 @@ function MainPage() {
   //   const b = bigint & 255;
   //   return `rgba(${r},${g},${b},${opacity})`;
   // };
+
+   
+  // NOTE
+  //  const hourCheck = () => {
+  //   const now = new Date();
+  //     const currentHour = now.getHours();
+      
+  //     if (currentHour >= 0 && currentHour < 9) {
+  //       // 자정 00시부터 아침 9시까지는 remainingTime을 업데이트하지 않음
+  //       return;
+  //     }
+  //  };
+
 
   const saveCirclesToLocalStorage = (circles) => {
     localStorage.setItem('circles', JSON.stringify(circles)); // 원 정보를 로컬 스토리지에 저장
