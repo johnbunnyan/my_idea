@@ -20,7 +20,7 @@ const TimerPage = () => {
    
       circles[index].timerRecords.push(newRecord);
       localStorage.setItem('circles', JSON.stringify(circles));
-      console.log(localStorage);
+      playSound();
       navigate(-1); // 타이머가 0이 되면 이전 페이지로 돌아가기
       return;
     }
@@ -40,6 +40,11 @@ const TimerPage = () => {
 
   const handleGiveUp = () => {
     navigate(-1); // 이전 페이지로 돌아가기
+  };
+
+  const playSound = () => {
+    const audio = new Audio('/sounds/ding.mp3'); // Path to your sound file
+    audio.play();
   };
 
   return (
