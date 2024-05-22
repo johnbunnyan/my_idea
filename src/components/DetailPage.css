@@ -46,3 +46,26 @@
     background-color: #45a049;
   }
   
+  .detail-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .detail-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .button-container button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+  }

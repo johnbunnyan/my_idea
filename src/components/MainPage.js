@@ -148,7 +148,8 @@ function MainPage() {
       position:randomNonOverlappingPosition(circles),
       clicks: 0, // 클릭 횟수 초기화
       createdAt: Date.now(),
-      remainingTime: 100 // 처음에는 100%로 시작
+      remainingTime: 100, // 처음에는 100%로 시작
+      timerRecords: [] // 타이머 기록을 저장할 배열
     };
 
   
@@ -188,6 +189,7 @@ function MainPage() {
   //     top: `${Math.random() * 60 + 5}%` // 더 멀리 떨어뜨리기 위해 범위 수정
   //   };
   // };
+
 
   const randomColor = () => {
     // 랜덤한 색상 생성

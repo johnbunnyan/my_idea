@@ -5,39 +5,67 @@ import './DetailPage.css'; // DetailPage.css 파일 import
 function DetailPage() {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation();
-  const { state } = location; 
-  const index = state.index; 
+  const { index } = location.state || {};
   const [circle, setCircle] = useState(null);
   // const [clicks, setClicks] = useState(0); // 클릭 횟수 상태 추가
 
   useEffect(() => {
-    // 해당 인덱스에 해당하는 원의 정보를 가져옴
-    const savedCircles = JSON.parse(localStorage.getItem('circles'));
-    // const savedClicks = JSON.parse(localStorage.getItem(`circle_${index}_clicks`)); // 클릭 횟수 가져오기
-    setCircle(savedCircles[index]);
-    // setClicks(savedClicks || 0); // 클릭 횟수 설정
+    const circles = JSON.parse(localStorage.getItem('circles')) || [];
+    setCircle(circles[index]);
   }, [index]);
+
+  if (!circle) return <div>Loading...</div>;
+
 
   // 뒤로가기 함수
   const handleGoBack = () => {
     navigate(-1); // 이전 페이지로 이동
   };
 
+  const handleButtonClick = (minutes) => {
+    navigate(`/timer`, { state: { minutes, index } });
+  };
+
   return (
     <div className="detail-container">
       {circle ? (
         <div>
-          <h2 className="title">원 정보</h2>
+          <h2 className="title">상세 소망 정보</h2>
           <p className="text">텍스트: {circle.text}</p>
-          <p className="text">색상: {circle.color}</p>
-          <p className="text">클릭 횟수: {circle.clicks}</p>
+          <p className="text">레벨: {circle.clicks}</p>
           {/* 기타 정보 표시 */}
         </div>
       ) : (
         <p className="loading">원 정보를 불러오는 중...</p> 
       )}
-      <button className="back-button" onClick={handleGoBack}>뒤로가기</button>
+
+<div className="detail-container">
+      <h1 className="detail-title">상상하기</h1>
+      <div className="button-container">
+        <button onClick={() => handleButtonClick(1)}>1분</button>
+        <button onClick={() => handleButtonClick(3)}>3분</button>
+        <button onClick={() => handleButtonClick(5)}>5분</button>
+      </div>
+    
+      <div className="record-list">
+            {circle.timerRecords && circle.timerRecords.length > 0 ? (
+              circle.timerRecords.map((record, i) => (
+                <div key={i} className="record">
+                  <p>타이머 시간: {record.timerDuration}분</p>
+                  <p>시작 시간: {new Date(record.startTime).toLocaleString()}</p>
+                  <p>성공</p>
+                </div>
+              ))
+            ) : (
+              <p>타이머 기록이 없습니다.</p>
+            )}
+          </div>
     </div>
+
+      <button className="back-button" onClick={handleGoBack}>뒤로가기</button>
+    
+    </div>
+    
   );
 }
 export default DetailPage;
