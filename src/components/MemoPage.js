@@ -55,7 +55,9 @@ const MemoPage = () => {
       <div>
         <h2>Memo Point: {memoPoint}</h2>
       </div>
-      <textarea value={memo} onChange={handleMemoChange} />
+      <textarea value={memo}
+      style={{ width: '100%', height: '150px' }} // 크기를 조절
+      onChange={handleMemoChange} />
       <br />
       
       <button onClick={handleSaveMemo}>Save Memo</button>

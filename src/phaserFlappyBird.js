@@ -42,9 +42,9 @@ class FlappyBird extends Phaser.Scene {
     this.input.on('pointerdown', this.jump, this);
     this.physics.add.collider(this.bird, this.pipes, this.hitPipe, null, this);
     
-    this.startText = this.add.text(300, 250, 'Click to Start', { fontSize: '32px', fill: '#000' });
+    this.startText = this.add.text(50, 50, 'Click to Start', { fontSize: '32px', fill: '#000' });
 
-    this.startButton = this.add.text(350, 300, 'Start', { fontSize: '32px', fill: '#0f0' })
+    this.startButton = this.add.text(50, 100, 'Start', { fontSize: '32px', fill: '#0f0' })
       .setInteractive()
       .on('pointerdown', () => this.startGame());
 
@@ -98,7 +98,7 @@ class FlappyBird extends Phaser.Scene {
     
     this.saveMemoPoint(); // 게임 종료 시 메모 포인트 저장
     this.memoPoint = 0; 
-    
+
     this.time.addEvent({
       delay: 1000,
       callback: this.restartGame,
@@ -184,7 +184,7 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: { y: 0 },
-      debug: true
+      debug:false
     }
   },
   scene: FlappyBird
