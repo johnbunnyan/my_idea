@@ -5,6 +5,7 @@ import MainPage from './components/MainPage';
 import DetailPage from './components/DetailPage';
 import TimerPage from './components/TimerPage';
 import PhaserGame from './components/PhaserGame';
+import MemoPage from './components/MemoPage';
 import Navbar from './components/Navbar';
 import './App.css'; // 스타일 파일을 임포트
 
@@ -19,7 +20,8 @@ function App() {
         <Route path="/detail/:id" element={<DetailPage />} />
         <Route path="/timer" element={<TimerPage />} />
         <Route path="/game" element={<PhaserGame />} />
-      </Routes>
+        <Route path="/memo" element={<MemoPage />} />
+     </Routes>
       </div>
     </Router>
   );
