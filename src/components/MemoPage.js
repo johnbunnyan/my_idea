@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // axios 라이브러리 import
 
 const MemoPage = () => {
   const [memo, setMemo] = useState('');
@@ -28,7 +29,7 @@ const MemoPage = () => {
     setMemo(event.target.value);
   };
 
-  const handleSaveMemo = () => {
+  const handleSaveMemo = async () => {
     // memoPoint가 0보다 큰 경우에만 메모를 저장하고 포인트를 차감
     if (memoPoint > 0) {
       const newMemo = { text: memo, color: `#${Math.floor(Math.random() * 16777215).toString(16)}` };
@@ -40,6 +41,23 @@ const MemoPage = () => {
       // 로컬 스토리지에 메모 리스트를 저장
       localStorage.setItem('savedMemoList', JSON.stringify(updatedMemoList));
       localStorage.setItem('memoPoint', (memoPoint - 1).toString());
+   
+      try {
+        const response = await axios.post('http://localhost:3000/save-memo', newMemo, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*', // Replace with the allowed domain if necessary
+            'Access-Control-Allow-Methods': 'GET, POST, PUT',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        });
+        if (response.status !== 200) {
+          throw new Error('Failed to save memo to GitHub');
+        }
+      } catch (error) {
+        console.error('Error saving memo to GitHub', error);
+      }
+    
     } else {
       // 포인트가 부족한 경우 알람 표시
       setAlert('Not enough memo points!');
@@ -55,11 +73,12 @@ const MemoPage = () => {
       <div>
         <h2>Memo Point: {memoPoint}</h2>
       </div>
-      <textarea value={memo}
-      style={{ width: '100%', height: '150px' }} // 크기를 조절
-      onChange={handleMemoChange} />
+      <textarea
+        value={memo}
+        style={{ width: '100%', height: '150px' }} // 크기를 조절
+        onChange={handleMemoChange}
+      />
       <br />
-      
       <button onClick={handleSaveMemo}>Save Memo</button>
       {alert && <p style={{ color: 'red' }}>{alert}</p>}
       <div>
@@ -72,7 +91,6 @@ const MemoPage = () => {
           ))}
         </div>
       </div>
-    
     </div>
   );
 };

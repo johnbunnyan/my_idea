@@ -132,7 +132,7 @@ function MainPage() {
     // 중복된 텍스트일 경우 클릭 횟수 증가
     const updatedCircles = circles.map(circle =>
       circle.text === inputText
-        ? { ...circle, clicks: circle.clicks + 1, createdAt: Date.now(), remainingTime: 100 }
+        ? { ...circle, color: randomColor(), clicks: circle.clicks + 1, createdAt: Date.now(), remainingTime: 100 }
         : circle
     );
     setCircles(updatedCircles);
