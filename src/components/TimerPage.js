@@ -18,8 +18,9 @@ const TimerPage = () => {
         success: true,
       };
    
-       // 클릭 수를 5 증가시킴
+       // 클릭 수를 증가시킴
        circles[index].clicks = (circles[index].clicks || 0) + 3;
+       circles[index].remainingTime = 100;
 
       circles[index].timerRecords.push(newRecord);
       localStorage.setItem('circles', JSON.stringify(circles));
