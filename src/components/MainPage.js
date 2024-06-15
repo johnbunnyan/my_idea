@@ -41,7 +41,10 @@ function MainPage() {
 
        // const opacity = Math.max(0, 1 - (hours / 12));
         //const newColor = hexToRgb(circle.color, opacity);
-        let remainingTime = (1 - hours / 12) * 100;
+        let remainingTime = circle.remainingTime - getDecreaseRate(circle.clicks);
+        remainingTime = Math.max(0, remainingTime); // 남은 시간이 0 이하로 내려가지 않도록
+
+
         return {
           ...circle,
           color: remainingTime <= 3 ? 'red' : circle.color,
@@ -76,7 +79,19 @@ function MainPage() {
   //       return;
   //     }
   //  };
+  const getDecreaseRate = (clicks) => {
+    if (clicks < 20) {
+      return 0.1; // 기본 감소 속도
+    } else if (clicks >= 20 && clicks < 50) {
+      return 0.05; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
+    } else if (clicks >= 50 && clicks < 100) {
+      return 0.01; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
+    } else {
+      return 0.001; // 클릭 수가 100 이상일 때 감소 속도 1/10
+    }
+  };
 
+  
 
   const saveCirclesToLocalStorage = (circles) => {
     localStorage.setItem('circles', JSON.stringify(circles)); // 원 정보를 로컬 스토리지에 저장
@@ -262,9 +277,9 @@ useEffect(() => {
   };
 
   const getClickMessage = (clicks) => {
-    if (clicks < 15) {
+    if (clicks < 20) {
       return '아이디어🌱';
-    } else if (clicks >= 15 && clicks < 50) {
+    } else if (clicks >= 20 && clicks < 50) {
       return '성취🔥';
     } else if (clicks >= 50 && clicks < 100) {
       return '산독기😈';
