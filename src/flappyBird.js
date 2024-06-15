@@ -176,7 +176,7 @@ class FlappyBird extends Phaser.Scene {
 }
 
 
-const config = {
+const flappyConfig = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
@@ -190,4 +190,4 @@ const config = {
   scene: FlappyBird
 };
 
-export default config;
+export default flappyConfig;
