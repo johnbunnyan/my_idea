@@ -42,7 +42,7 @@ function MainPage() {
        // const opacity = Math.max(0, 1 - (hours / 12));
         //const newColor = hexToRgb(circle.color, opacity);
         let remainingTime = circle.remainingTime - getDecreaseRate(circle.clicks);
-        remainingTime = Math.max(0, remainingTime); // 남은 시간이 0 이하로 내려가지 않도록
+
 
 
         return {
@@ -187,6 +187,15 @@ function MainPage() {
 
   // 상세페이지로 이동하는 함수
   const handleMoveToDetail = (index) => {
+    const updatedCircles = circles.map((circle, i) => 
+      i === index 
+        ? { ...circle, clicks: circle.clicks + 1, remainingTime: 100 } 
+        : circle
+    );
+
+    setCircles(updatedCircles);
+    saveCirclesToLocalStorage(updatedCircles);
+    
     navigate(`/detail/${index}`, { state: { index: index } });
   };
 

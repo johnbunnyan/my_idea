@@ -7,20 +7,26 @@ const TimerPage = () => {
   const navigate = useNavigate();
   const { minutes, index } = location.state || {};
   const [time, setTime] = useState(minutes * 60);
-
+  const [circleText, setCircleText] = useState('');
   
   useEffect(() => {
+    const circles = JSON.parse(localStorage.getItem('circles')) || [];
+    const circle = circles[index];
+    if (circle) {
+      setCircleText(circle.text);
+    }
+
     if (time === 0) {
-      const circles = JSON.parse(localStorage.getItem('circles')) || [];
       const newRecord = {
         timerDuration: minutes,
         startTime: Date.now(),
         success: true,
       };
+
    
        // 클릭 수를 증가시킴
-       circles[index].clicks = (circles[index].clicks || 0) + 3;
-      //  circles[index].remainingTime = 100;
+       circles[index].clicks = (circles[index].clicks || 0) + 10;
+       circles[index].remainingTime = 100;
 
       circles[index].timerRecords.push(newRecord);
       localStorage.setItem('circles', JSON.stringify(circles));
@@ -51,8 +57,11 @@ const TimerPage = () => {
     audio.play();
   };
 
+  const opacity = time / (minutes * 60);
+
   return (
     <div className="timer-container">
+       <h2 className="time-circle-text" style={{ opacity }}>{circleText}</h2>
       <h1 className="timer">{formatTime(time)}</h1>
       <button className="give-up-button" onClick={handleGiveUp}>포기하기</button>
     </div>

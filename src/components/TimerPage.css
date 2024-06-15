@@ -7,6 +7,13 @@
     background-color: black;
   }
   
+  .time-circle-text {
+    font-size: 7rem;
+    margin-bottom: 10px;
+    transition: opacity 1s ease-in-out;
+    color: rgb(236, 21, 21);
+  }
+  
   .timer {
     color: white;
     font-size: 7rem;
