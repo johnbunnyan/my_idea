@@ -8,7 +8,7 @@
   }
   
   .time-circle-text {
-    font-size: 7rem;
+    font-size: 30px;
     margin-bottom: 10px;
     transition: opacity 1s ease-in-out;
     color: rgb(236, 21, 21);
