@@ -2,7 +2,7 @@
 // // import flappyConfig from '../flappyBird'; // FlappyBird 게임 설정을 가져옴
 // import { k } from '../rpgGame';
 import Iframe from 'react-iframe'
-
+import './GamePage.css';
 
 const PhaserGame = () => {
   // useEffect(() => {
@@ -21,7 +21,7 @@ const PhaserGame = () => {
 
   return (
 
-    <div style={{ marginTop: '45px' }}> {/* marginTop 값을 조정하여 위치를 아래로 내립니다 */}
+    <div> 
       <Iframe 
         url="https://loveyourenemy.netlify.app/"
         width="1500px"  // width와 height 값을 적절하게 조정하세요
