@@ -21,13 +21,13 @@ const PhaserGame = () => {
 
   return (
 
-    <div> 
-      <Iframe 
+    <div className='game-div'> 
+      <Iframe
         url="https://loveyourenemy.netlify.app/"
         width="1500px"  // width와 height 값을 적절하게 조정하세요
         height="620px"
         id=""
-        className=""
+        className="game"
         display="block"
         position="relative"
       />
