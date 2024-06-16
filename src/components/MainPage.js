@@ -31,7 +31,7 @@ function MainPage() {
     //const minutes = age / (1000 * 60);
     const hours = age / (1000 * 60 * 60);
 
-    if (hours >= 12) {
+    if (hours >= 12 || circle.remainingTime <= 0) {
       return null; // 원을 삭제
     }
 
