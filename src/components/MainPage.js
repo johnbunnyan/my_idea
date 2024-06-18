@@ -80,12 +80,16 @@ function MainPage() {
   //     }
   //  };
   const getDecreaseRate = (clicks) => {
-    if (clicks < 20) {
-      return 0.1; // 기본 감소 속도
-    } else if (clicks >= 20 && clicks < 50) {
+    if (clicks < 10) {
+      return 2; // 기본 감소 속도
+    } else if (clicks >= 10 && clicks < 25) {
       return 0.05; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
-    } else if (clicks >= 50 && clicks < 100) {
-      return 0.01; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
+    } 
+    else if (clicks >= 25 && clicks < 50) {
+      return 0.01; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
+    } 
+    else if (clicks >= 50 && clicks < 100) {
+      return 0.009; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
     } else {
       return 0.001; // 클릭 수가 100 이상일 때 감소 속도 1/10
     }
@@ -237,7 +241,7 @@ const randomNonOverlappingPosition = (existingCircles) => {
   const newPosition = () => {
     return {
       left: `${Math.random() * 70 + 15}%`,
-      top: `${Math.random() * pageHeight}px`
+      top: `${Math.random() * (pageHeight - buttonHeight)}px` // 버튼 영역을 제외한 높이 내에서 생성
     };
   };
 
@@ -258,6 +262,7 @@ const randomNonOverlappingPosition = (existingCircles) => {
   return position;
 };
 
+const buttonHeight = 100; // 버튼 영역의 높이 설정 (적절한 높이로 설정하기)
 // 위치가 겹치는지 확인하는 함수
 const isOverlapping = (position, existingCircles) => {
   const radius = 25; // 원의 반지름 25px
@@ -286,11 +291,14 @@ useEffect(() => {
   };
 
   const getClickMessage = (clicks) => {
-    if (clicks < 20) {
-      return '아이디어🌱';
-    } else if (clicks >= 20 && clicks < 50) {
+    if (clicks < 10) {
+      return '씨앗심기🌱';
+    } else if (clicks >= 10 && clicks < 25) {
+      return '희망사항🍎';
+    }
+    else if (clicks >= 25 && clicks < 50) {
       return '성취🔥';
-    } else if (clicks >= 50 && clicks < 100) {
+    }  else if (clicks >= 50 && clicks < 100) {
       return '산독기😈';
     } else {
       return '확정된 미래⭐️';
@@ -315,7 +323,7 @@ useEffect(() => {
             onClick={() => handleComponentClick(index)}
           >
             <span className="circle-text">{circle.text}</span>
-            <span className="circle-text">{getClickMessage(circle.clicks)}: {circle.clicks || 0}</span>
+            <span className="circle-text">{getClickMessage(circle.clicks)} : {circle.clicks || 0}</span>
            
             <div className="time-bar-container">
               <div
