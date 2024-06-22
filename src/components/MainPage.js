@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useDebugValue } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { api } from "../convex/_generated/api";
+import { ConvexHttpClient } from "convex/browser";
 
 import './MainPage.css'; // CSS 파일 import
 
@@ -14,11 +15,20 @@ function MainPage() {
   const navigate = useNavigate();
   const containerRef = useRef(null); // 스크롤 조정을 위해 ref 추가
 
+  const serverIdea = new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
+
   useEffect(() => {
-    const savedCircles = JSON.parse(localStorage.getItem('circles'));
-    if (savedCircles) {
-      setCircles(savedCircles);
-    }
+  
+    serverIdea.query(api.thinks.get).then((res)=>{
+      const savedCircles = res;
+   
+      const thinks = savedCircles.thinks;
+
+      if (savedCircles) {
+        setCircles(thinks);
+      }
+});
+
   }, []);
 
   useEffect(() => {
@@ -27,6 +37,7 @@ function MainPage() {
       // NOTE hourCheck();
 
       const updatedCircles = circles.map(circle => {
+       
         const age = now - circle.createdAt;
     //const minutes = age / (1000 * 60);
     const hours = age / (1000 * 60 * 60);
@@ -52,9 +63,20 @@ function MainPage() {
         };
       }).filter(Boolean);
 
+      console.log(updatedCircles)
       setCircles(updatedCircles);
-      localStorage.setItem('circles', JSON.stringify(updatedCircles));
-    }, 1000); // 1분마다 업데이트
+  
+
+      serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:updatedCircles}).then((update)=>{
+        const savedCircles = update;
+   
+  });
+
+
+
+
+      // localStorage.setItem('circles', JSON.stringify(updatedCircles));
+    }, 10000); // 10초마다 업데이트
 
     
     return () => clearInterval(intervalId);
@@ -98,7 +120,12 @@ function MainPage() {
   
 
   const saveCirclesToLocalStorage = (circles) => {
-    localStorage.setItem('circles', JSON.stringify(circles)); // 원 정보를 로컬 스토리지에 저장
+    
+    serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:circles}).then((update)=>{
+      const savedCircles = update;
+   console.log(savedCircles)
+    });
+    // localStorage.setItem('circles', JSON.stringify(circles)); // 원 정보를 로컬 스토리지에 저장
   };
 
   
@@ -205,6 +232,10 @@ function MainPage() {
 
   const handleResetButtonClick = () => {
     setCircles([]); // 생성된 원들 초기화
+    serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:[]}).then((update)=>{
+      const savedCircles = update;
+   console.log(savedCircles)
+    });
     localStorage.removeItem('circles'); // 로컬 스토리지에서 데이터 제거
   };
 
