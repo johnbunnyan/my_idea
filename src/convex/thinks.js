@@ -10,12 +10,14 @@ export const get = query({
   },
 });
 
+
+
 export const replaceIdea = mutation({
   args: {updatedCircles : v.any()},
   handler: async (ctx,args) => {
 
     const updateOne = args.updatedCircles;
-    console.log(updateOne)
+    // console.log(updateOne)
     const last = await ctx.db.query('thinks').collect();
 
   

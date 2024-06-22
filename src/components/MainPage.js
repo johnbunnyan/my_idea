@@ -66,7 +66,7 @@ const serverIdea = useMemo(()=>{
         };
       }).filter(Boolean);
 
-      console.log(updatedCircles)
+      console.log("초단위",updatedCircles)
       setCircles(updatedCircles);
   
 
@@ -124,7 +124,7 @@ const serverIdea = useMemo(()=>{
   
 
   const saveCirclesToLocalStorage = (circles) => {
-    
+    console.log("공용",circles)
     serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:circles}).then((update)=>{
       const savedCircles = update;
    console.log(savedCircles)

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo,useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './TimerPage.css';
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../convex/_generated/api";
 
 const TimerPage = () => {
   const location = useLocation();
@@ -8,15 +10,37 @@ const TimerPage = () => {
   const { minutes, index } = location.state || {};
   const [time, setTime] = useState(minutes * 60);
   const [circleText, setCircleText] = useState('');
-  
+  const [circle, setCircle] = useState([]);
+  const [think, setThink] = useState([]);
+
+  const serverIdea = useMemo(()=>{
+    return new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
+  },[])
+
+
   useEffect(() => {
-    const circles = JSON.parse(localStorage.getItem('circles')) || [];
-    const circle = circles[index];
-    if (circle) {
-      setCircleText(circle.text);
+    serverIdea.query(api.thinks.get).then((res)=>{
+      const savedCircles = res;
+   
+   const thinks = savedCircles.thinks;  
+   const circles = thinks[index];
+ 
+   setThink(thinks);
+    setCircle(circles);
+
+    if (circles) {
+      setCircleText(circles.text);
     }
+  });
+
+});
+
+  useEffect(() => {
+let circles = circle;
+
 
     if (time === 0) {
+  
       const newRecord = {
         timerDuration: minutes,
         startTime: Date.now(),
@@ -25,11 +49,19 @@ const TimerPage = () => {
 
    
        // 클릭 수를 증가시킴
-       circles[index].clicks = (circles[index].clicks || 0) + 10;
-       circles[index].remainingTime = 100;
+       circles.clicks = (circles.clicks || 0) + 10;
+      
+       circles.remainingTime = 100;
 
-      circles[index].timerRecords.push(newRecord);
-      localStorage.setItem('circles', JSON.stringify(circles));
+      circles.timerRecords.push(newRecord);
+      // console.log("wwwwwww",circles)
+      // console.log("ttttt",think)
+      serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:think}).then((update)=>{
+        const savedCircles = update;
+     console.log(savedCircles)
+      });
+
+      // localStorage.setItem('circles', JSON.stringify(circles));
       playSound();
       navigate(-1); // 타이머가 0이 되면 이전 페이지로 돌아가기
       return;
@@ -40,8 +72,13 @@ const TimerPage = () => {
     }, 1000);
 
     return () => clearInterval(timerId);
-  }, [time, navigate, minutes, index]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [time, navigate, minutes, index, serverIdea]);
 
+
+
+
+  
   const formatTime = (seconds) => {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
