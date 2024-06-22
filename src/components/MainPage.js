@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useDebugValue } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from "../convex/_generated/api";
 import { ConvexHttpClient } from "convex/browser";
@@ -15,7 +15,10 @@ function MainPage() {
   const navigate = useNavigate();
   const containerRef = useRef(null); // 스크롤 조정을 위해 ref 추가
 
-  const serverIdea = new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
+ // const serverIdea = new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
+const serverIdea = useMemo(()=>{
+  return new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
+},[])
 
   useEffect(() => {
   
@@ -29,7 +32,7 @@ function MainPage() {
       }
 });
 
-  }, []);
+  }, [serverIdea]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -68,7 +71,8 @@ function MainPage() {
   
 
       serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:updatedCircles}).then((update)=>{
-        const savedCircles = update;
+        //const savedCircles = update;
+
    
   });
 
@@ -80,7 +84,7 @@ function MainPage() {
 
     
     return () => clearInterval(intervalId);
-  }, [circles]);
+  }, [circles,serverIdea]);
 
   // const hexToRgb = (hex, opacity) => {
   //   const bigint = parseInt(hex.slice(1), 16);
