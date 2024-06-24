@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.3.0",
     "axios": "^1.7.2",
     "convex": "^1.12.2",
+    "convex-dev": "^0.1.5",
     "kaplay": "^3000.1.17",
     "phaser": "^3.80.1",
     "react": "^18.3.1",

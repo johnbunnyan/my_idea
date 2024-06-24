@@ -21,7 +21,7 @@ function DetailPage() {
       const savedCircles = res;
    
       const thinks = savedCircles.thinks;
-
+console.log(thinks)
       if (thinks) {
         setCircle(thinks[index]);
       }

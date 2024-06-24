@@ -39,6 +39,16 @@ const serverIdea = useMemo(()=>{
       const now = Date.now();
       // NOTE hourCheck();
 
+      serverIdea.query(api.thinks.get).then((res)=>{
+        const savedCircles = res;
+     
+        const thinks = savedCircles.thinks;
+  
+        if (savedCircles) {
+          setCircles(thinks);
+        }
+      });
+      
       const updatedCircles = circles.map(circle => {
        
         const age = now - circle.createdAt;
