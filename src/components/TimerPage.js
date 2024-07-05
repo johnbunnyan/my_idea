@@ -2,7 +2,7 @@ import React, { useMemo,useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './TimerPage.css';
 import axios from 'axios';
-
+const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
 
 
 const TimerPage = () => {
@@ -22,7 +22,7 @@ const TimerPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get('/.netlify/functions/get_ideas',
+      const result = await axios.get(`${PROXY}/.netlify/functions/get_ideas`,
      
       );
   
@@ -65,7 +65,7 @@ let circles = circle;
      console.log(thinksGroup)
 
       const updateData = async () => {
-        const result = await axios.post('/.netlify/functions/update_ideas',
+        const result = await axios.post(`${PROXY}'/.netlify/functions/update_ideas`,
           JSON.stringify({updatedCircles:thinksGroup})
         );
         console.log(result)

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './DetailPage.css'; // DetailPage.css 파일 import
 import axios from 'axios';
+const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
 
 function DetailPage() {
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -13,7 +14,7 @@ function DetailPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get('/.netlify/functions/get_ideas',
+      const result = await axios.get(`${PROXY}/.netlify/functions/get_ideas`,
      
       );
   

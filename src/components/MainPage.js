@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import connectToDatabase from '../util/mongodb'
 import './MainPage.css'; // CSS 파일 import
+const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
 
 function MainPage() {
   const [inputText, setInputText] = useState('');
@@ -18,7 +19,7 @@ function MainPage() {
  
  useEffect(() => {
   const fetchData = async () => {
-    const result = await axios.get('/.netlify/functions/get_ideas',
+    const result = await axios.get(`${PROXY}/.netlify/functions/get_ideas`,
    
     );
 
@@ -42,7 +43,7 @@ function MainPage() {
       // NOTE hourCheck();
 
       const fetchData = async () => {
-        const result = await axios.get('/.netlify/functions/get_ideas',
+        const result = await axios.get(`${PROXY}/.netlify/functions/get_ideas`,
        
         );
     
@@ -91,7 +92,7 @@ function MainPage() {
   
 
       const updateData = async () => {
-        const result = await axios.post('/.netlify/functions/update_ideas',
+        const result = await axios.post(`${PROXY}/.netlify/functions/update_ideas`,
           JSON.stringify({updatedCircles:updatedCircles})
         );
         if(result.acknowledged) return
@@ -153,7 +154,7 @@ function MainPage() {
 
   const saveCirclesToDB = async(circles) => {
     console.log("저장한다",circles)
-   await axios.post('/.netlify/functions/update_ideas',
+   await axios.post(`${PROXY}/.netlify/functions/update_ideas`,
       JSON.stringify({updatedCircles:circles})
     );
   //   serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:circles}).then((update)=>{
@@ -274,7 +275,7 @@ function MainPage() {
   //     const savedCircles = update;
   //  console.log(savedCircles)
   //   });
-   await axios.post('/.netlify/functions/delete_ideas',
+   await axios.post(`${PROXY}/.netlify/functions/delete_ideas`,
     JSON.stringify({updatedCircles:circles})
   );
 
