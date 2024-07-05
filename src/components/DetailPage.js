@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './DetailPage.css'; // DetailPage.css 파일 import
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "../convex/_generated/api";
+import axios from 'axios';
 
 function DetailPage() {
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -11,23 +10,22 @@ function DetailPage() {
   const [circle, setCircle] = useState(null);
   // const [clicks, setClicks] = useState(0); // 클릭 횟수 상태 추가
 
-  const serverIdea = useMemo(()=>{
-    return new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
-  },[])
 
   useEffect(() => {
-    
-    serverIdea.query(api.thinks.get).then((res)=>{
-      const savedCircles = res;
-   
-      const thinks = savedCircles.thinks;
-console.log(thinks)
+    const fetchData = async () => {
+      const result = await axios.get('/.netlify/functions/get_ideas',
+     
+      );
+  
+      const thinks = result.data.thinks;
       if (thinks) {
         setCircle(thinks[index]);
       }
-});
+    };
+    fetchData();
+
    
-  }, [serverIdea,index, circle]);
+  },[index, circle]);
 
   if (!circle) return <div>Loading...</div>;
 

@@ -1,8 +1,9 @@
 import React, { useMemo,useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './TimerPage.css';
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "../convex/_generated/api";
+import axios from 'axios';
+
+
 
 const TimerPage = () => {
   const location = useLocation();
@@ -11,29 +12,34 @@ const TimerPage = () => {
   const [time, setTime] = useState(minutes * 60);
   const [circleText, setCircleText] = useState('');
   const [circle, setCircle] = useState([]);
-  const [think, setThink] = useState([]);
+  const [thinksGroup, setThinksGroup] = useState([]);
 
   const serverIdea = useMemo(()=>{
-    return new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
+    return 
   },[])
 
 
+
   useEffect(() => {
-    serverIdea.query(api.thinks.get).then((res)=>{
-      const savedCircles = res;
+    const fetchData = async () => {
+      const result = await axios.get('/.netlify/functions/get_ideas',
+     
+      );
+  
+      const thinksGroup = result.data.thinks;
    
-   const thinks = savedCircles.thinks;  
-   const circles = thinks[index];
- 
-   setThink(thinks);
-    setCircle(circles);
+      const circles = thinksGroup[index];
+       setThinksGroup(thinksGroup);
+       setCircleText(circles.text)
+       setCircle(circles);
 
-    if (circles) {
-      setCircleText(circles.text);
-    }
-  });
+      if (thinksGroup) {
+        setCircle(thinksGroup[index]);
+      }
+    };
+    fetchData();
 
-});
+},[index]);
 
   useEffect(() => {
 let circles = circle;
@@ -54,12 +60,26 @@ let circles = circle;
        circles.remainingTime = 100;
 
       circles.timerRecords.push(newRecord);
+      // thinksGroup.push(circles)
+     thinksGroup[index] = circles;
+     console.log(thinksGroup)
+
+      const updateData = async () => {
+        const result = await axios.post('/.netlify/functions/update_ideas',
+          JSON.stringify({updatedCircles:thinksGroup})
+        );
+        console.log(result)
+    
+        // const thinks = [result.data];
+        // setCircles(thinks);
+      };
+      updateData();
       // console.log("wwwwwww",circles)
       // console.log("ttttt",think)
-      serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:think}).then((update)=>{
-        const savedCircles = update;
-     console.log(savedCircles)
-      });
+    //   serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:think}).then((update)=>{
+    //     const savedCircles = update;
+    //  console.log(savedCircles)
+    //   });
 
       // localStorage.setItem('circles', JSON.stringify(circles));
       playSound();

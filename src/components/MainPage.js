@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { api } from "../convex/_generated/api";
-import { ConvexHttpClient } from "convex/browser";
-
+// import connectToDatabase from '../util/mongodb'
 import './MainPage.css'; // CSS 파일 import
 
 function MainPage() {
@@ -16,46 +15,57 @@ function MainPage() {
   const containerRef = useRef(null); // 스크롤 조정을 위해 ref 추가
 
  // const serverIdea = new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
-const serverIdea = useMemo(()=>{
-  return new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
-},[])
-
-  useEffect(() => {
-  
-    serverIdea.query(api.thinks.get).then((res)=>{
-      const savedCircles = res;
+ 
+ useEffect(() => {
+  const fetchData = async () => {
+    const result = await axios.get('/.netlify/functions/get_ideas',
    
-      const thinks = savedCircles.thinks;
+    );
 
-      if (savedCircles) {
-        setCircles(thinks);
-      }
-});
+    if(result.data === null){
+      setCircles([])
+    }else{
+      const thinks = result.data.thinks;
+    
+      setCircles(thinks);
+    }
+ 
+  };
+  fetchData();
+}, []);
 
-  }, [serverIdea]);
+
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const now = Date.now();
+      // const now = Date.now();
       // NOTE hourCheck();
 
-      serverIdea.query(api.thinks.get).then((res)=>{
-        const savedCircles = res;
+      const fetchData = async () => {
+        const result = await axios.get('/.netlify/functions/get_ideas',
+       
+        );
+    
+       
+    if(result.data === null){
+      setCircles([])
+    }else{
+      const thinks = result.data.thinks;
+    
+      setCircles(thinks);
+    }
+      };
+      fetchData();
      
-        const thinks = savedCircles.thinks;
-  
-        if (savedCircles) {
-          setCircles(thinks);
-        }
-      });
       
       const updatedCircles = circles.map(circle => {
        
-        const age = now - circle.createdAt;
+   
+        // const age = now - circle.createdAt;
     //const minutes = age / (1000 * 60);
-    const hours = age / (1000 * 60 * 60);
+    // const hours = age / (1000 * 60 * 60);
 
-    if (hours >= 12 || circle.remainingTime <= 0) {
+    if ( circle.remainingTime <= 0) {
       return null; // 원을 삭제
     }
 
@@ -80,13 +90,21 @@ const serverIdea = useMemo(()=>{
       setCircles(updatedCircles);
   
 
-      serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:updatedCircles}).then((update)=>{
-        //const savedCircles = update;
+      const updateData = async () => {
+        const result = await axios.post('/.netlify/functions/update_ideas',
+          JSON.stringify({updatedCircles:updatedCircles})
+        );
+        if(result.acknowledged) return
+    
+        // const thinks = [result.data];
+        // setCircles(thinks);
+      };
+      updateData();
+  //     serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:updatedCircles}).then((update)=>{
+  //       //const savedCircles = update;
 
    
-  });
-
-
+  // });
 
 
       // localStorage.setItem('circles', JSON.stringify(updatedCircles));
@@ -94,7 +112,7 @@ const serverIdea = useMemo(()=>{
 
     
     return () => clearInterval(intervalId);
-  }, [circles,serverIdea]);
+  }, [circles]);
 
   // const hexToRgb = (hex, opacity) => {
   //   const bigint = parseInt(hex.slice(1), 16);
@@ -133,12 +151,15 @@ const serverIdea = useMemo(()=>{
 
   
 
-  const saveCirclesToLocalStorage = (circles) => {
-    console.log("공용",circles)
-    serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:circles}).then((update)=>{
-      const savedCircles = update;
-   console.log(savedCircles)
-    });
+  const saveCirclesToDB = async(circles) => {
+    console.log("저장한다",circles)
+   await axios.post('/.netlify/functions/update_ideas',
+      JSON.stringify({updatedCircles:circles})
+    );
+  //   serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:circles}).then((update)=>{
+  //     const savedCircles = update;
+  //  console.log(savedCircles)
+  //   });
     // localStorage.setItem('circles', JSON.stringify(circles)); // 원 정보를 로컬 스토리지에 저장
   };
 
@@ -198,7 +219,7 @@ const serverIdea = useMemo(()=>{
     setCircles(updatedCircles);
 
     // 로컬 스토리지에 업데이트된 원 정보 저장
-    saveCirclesToLocalStorage(updatedCircles);
+    saveCirclesToDB(updatedCircles);
   } else {
     // 중복된 텍스트가 아닐 경우 새로운 원 추가
     const newCircle = {
@@ -217,7 +238,7 @@ const serverIdea = useMemo(()=>{
     const newCircles = [...circles, newCircle];
     setCircles(newCircles);
     // 로컬 스토리지에 업데이트된 원 정보 저장
-    saveCirclesToLocalStorage(newCircles);
+    saveCirclesToDB(newCircles);
     };
 
 
@@ -234,22 +255,29 @@ const serverIdea = useMemo(()=>{
   const handleMoveToDetail = (index) => {
     const updatedCircles = circles.map((circle, i) => 
       i === index 
-        ? { ...circle, clicks: circle.clicks + 1, remainingTime: 100 } 
+        ? { ...circle,
+           clicks: circle.clicks + 1,
+            //remainingTime: 100
+           } 
         : circle
     );
 
     setCircles(updatedCircles);
-    saveCirclesToLocalStorage(updatedCircles);
+    saveCirclesToDB(updatedCircles);
     
     navigate(`/detail/${index}`, { state: { index: index } });
   };
 
-  const handleResetButtonClick = () => {
+  const handleResetButtonClick =async () => {
     setCircles([]); // 생성된 원들 초기화
-    serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:[]}).then((update)=>{
-      const savedCircles = update;
-   console.log(savedCircles)
-    });
+  //   serverIdea.mutation(api.thinks.replaceIdea,{updatedCircles:[]}).then((update)=>{
+  //     const savedCircles = update;
+  //  console.log(savedCircles)
+  //   });
+   await axios.post('/.netlify/functions/delete_ideas',
+    JSON.stringify({updatedCircles:circles})
+  );
+
     localStorage.removeItem('circles'); // 로컬 스토리지에서 데이터 제거
   };
 
