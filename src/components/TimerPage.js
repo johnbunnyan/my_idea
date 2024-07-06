@@ -65,7 +65,7 @@ let circles = circle;
      console.log(thinksGroup)
 
       const updateData = async () => {
-        const result = await axios.post(`${PROXY}'/.netlify/functions/update_ideas`,
+        const result = await axios.post(`${PROXY}/.netlify/functions/update_ideas`,
           JSON.stringify({updatedCircles:thinksGroup})
         );
         console.log(result)
