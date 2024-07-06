@@ -15,6 +15,8 @@ function MainPage() {
   const navigate = useNavigate();
   const containerRef = useRef(null); // 스크롤 조정을 위해 ref 추가
 
+  // 효과음 관련 상태
+ 
  // const serverIdea = new ConvexHttpClient(process.env["REACT_APP_CONVEX_URL"]);
  
  useEffect(() => {
@@ -138,15 +140,15 @@ function MainPage() {
     if (clicks < 10) {
       return 2; // 기본 감소 속도
     } else if (clicks >= 10 && clicks < 25) {
-      return 0.05; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
+      return 0.1; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
     } 
     else if (clicks >= 25 && clicks < 50) {
-      return 0.01; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
+      return 0.05; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
     } 
     else if (clicks >= 50 && clicks < 100) {
-      return 0.009; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
+      return 0.001; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
     } else {
-      return 0.001; // 클릭 수가 100 이상일 때 감소 속도 1/10
+      return 0.0001; // 클릭 수가 100 이상일 때 감소 속도 1/10
     }
   };
 
@@ -177,9 +179,14 @@ function MainPage() {
       setInputText(e.target.value);
     }
   };
+  const playSound = () => {
+    const audio = new Audio('/sounds/sound.mp3'); // Path to your sound file
+    audio.play();
+  };
 
   const handleInputKeyDown = (e) => {
     if (e.key === 'Enter' && !isTyping) {
+      playSound();
       handleButtonClick();
     }
   };
@@ -221,6 +228,7 @@ function MainPage() {
 
     // 로컬 스토리지에 업데이트된 원 정보 저장
     saveCirclesToDB(updatedCircles);
+    
   } else {
     // 중복된 텍스트가 아닐 경우 새로운 원 추가
     const newCircle = {
@@ -243,6 +251,7 @@ function MainPage() {
     };
 
 
+    
     setInputText('');
     setIsTyping(false); // 입력이 완료됨을 표시
   };
