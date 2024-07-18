@@ -29,7 +29,6 @@ function MainPage() {
       setCircles([])
     }else{
       const thinks = result.data.thinks;
-    
       setCircles(thinks);
     }
  
@@ -41,44 +40,43 @@ function MainPage() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      // const now = Date.now();
+  
       // NOTE hourCheck();
 
-      const fetchData = async () => {
-        const result = await axios.get(`${PROXY}/.netlify/functions/get_ideas`,
-       
-        );
+    //   const fetchData = async () => {
+    //     const result = await axios.get(`${PROXY}/.netlify/functions/get_ideas`,);
     
        
-    if(result.data === null){
-      setCircles([])
-    }else{
-      const thinks = result.data.thinks;
-    
-      setCircles(thinks);
-    }
-      };
-      fetchData();
+    //       if(result.data === null){
+    //         setCircles([])
+    //         }
+    //       else{
+    //         const thinks = result.data.thinks;
+    //         setCircles(thinks);
+    //         }
+    // };
+
+    // fetchData();
      
       
       const updatedCircles = circles.map(circle => {
-       
+        const now = Date.now();
    
-        // const age = now - circle.createdAt;
-    //const minutes = age / (1000 * 60);
-    // const hours = age / (1000 * 60 * 60);
+        const age = now - circle.createdAt;
+    // const minutes = age / (1000 * 60);
+    const hours = age / (1000 * 60 * 60);
 
     if ( circle.remainingTime <= 0) {
       return null; // 원을 삭제
     }
 
-    // if (minutes >= 1) {
-    //   return null; // 원을 삭제
-    // }
+    if (hours >= 12) {
+      return null; // 원을 삭제
+    }
 
        // const opacity = Math.max(0, 1 - (hours / 12));
         //const newColor = hexToRgb(circle.color, opacity);
-        let remainingTime = circle.remainingTime - getDecreaseRate(circle.clicks);
+        let remainingTime = (1 - hours / 12) * 100;
 
 
 
@@ -111,7 +109,7 @@ function MainPage() {
 
 
       // localStorage.setItem('circles', JSON.stringify(updatedCircles));
-    }, 10000); // 10초마다 업데이트
+    }, 1000); // 10초마다 업데이트
 
     
     return () => clearInterval(intervalId);
@@ -136,21 +134,22 @@ function MainPage() {
   //       return;
   //     }
   //  };
-  const getDecreaseRate = (clicks) => {
-    if (clicks < 10) {
-      return 2; // 기본 감소 속도
-    } else if (clicks >= 10 && clicks < 25) {
-      return 0.1; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
-    } 
-    else if (clicks >= 25 && clicks < 50) {
-      return 0.08; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
-    } 
-    else if (clicks >= 50 && clicks < 100) {
-      return 0.01; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
-    } else {
-      return 0.001; // 클릭 수가 100 이상일 때 감소 속도 1/10
-    }
-  };
+
+  // const getDecreaseRate = (clicks) => {
+  //   if (clicks < 10) {
+  //     return 2; // 기본 감소 속도
+  //   } else if (clicks >= 10 && clicks < 25) {
+  //     return 0.8; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
+  //   } 
+  //   else if (clicks >= 25 && clicks < 50) {
+  //     return 0.3; // 클릭 수가 20 이상 50 미만일 때 감소 속도 절반
+  //   } 
+  //   else if (clicks >= 50 && clicks < 100) {
+  //     return 0.1; // 클릭 수가 50 이상 100 미만일 때 감소 속도 1/4
+  //   } else {
+  //     return 0.01; // 클릭 수가 100 이상일 때 감소 속도 1/10
+  //   }
+  // };
 
   
 
